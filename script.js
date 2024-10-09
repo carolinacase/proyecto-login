@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded',function(){
     const emailError = document.getElementById('emailError');
     const passwordError = document.getElementById('passwordError');
     const confirmPasswordError = document.getElementById('confirmPasswordError');
+    const showHideBottom = document.getElementById('show-hide')
+
 
     loginForm.addEventListener('submit',function(event){
         event.preventDefault();
@@ -14,18 +16,28 @@ document.addEventListener('DOMContentLoaded',function(){
     })
 
     emailInput.addEventListener('blur', function(){
-        //TODO: Agregar método que valida el mail
+        validateEmail();
     })
 
     emailInput.addEventListener('change',function(){
-        //TODO: Agregar método que limpie el error
+        clearError(emailError)
     })
 
-    PasswordInput.addEventListener('change',function(){
-        //TODO: Agregar método que limpie el error
+    passwordInput.addEventListener('change',function(){
+        clearError(passwordError)
     })
     confirmPasswordInput.addEventListener('change',function(){
-        //TODO: Agregar método que limpie el error
+        clearError(confirmPasswordError)
+    })
+
+    showHideBottom.addEventListener('click', function(){
+        if(passwordInput.type == 'password'){
+            passwordInput.type = 'text'
+            confirmPasswordInput.type = 'text'
+        }else{
+            passwordInput.type = 'password'
+            confirmPasswordInput.type = 'password'
+        }
     })
 
     function validateForm(){
@@ -34,21 +46,26 @@ document.addEventListener('DOMContentLoaded',function(){
         const PasswordMatch = validatePasswordMatch()
 
         if(isValidEmail && isValidPassword && PasswordMatch){
-            // guardar mail en el localStorage y generar un JSON en consola
-            alert('has ingresado con éxito')
+            saverToLocalStorage()
+            console.log('Email guardado en localStorage:', emailInput.value);
+   
+            alert('Has ingresado con éxito');
         } 
 
     }
 
     function validateEmail(){
-        const emailregex = /^[a-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        const emailValue = emailInput.ariaValueMax.trim() // eñ trim elimina espacios vacios al comienzo o al final del input
+        const emailregex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const emailValue = emailInput.value.trim(); // eñ trim elimina espacios vacios al comienzo o al final del input
+        console.log("Validando email:", emailValue); // Mensaje para ver qué se está validando
 
-        if(!emailregex.test(email.value)){
-            //TODO. mostrar error
-            return false
+
+        if(!emailregex.test(emailValue)){
+            showError(emailError,'Instresa un email válido')
+            console.log("Email no válido"); // Mensaje si el email no es válido
+            return false;
         }
-        
+        console.log("Email válido"); // Mensaje si el email es válido
         return true
 
     }
@@ -56,9 +73,9 @@ document.addEventListener('DOMContentLoaded',function(){
     function validatePassword(){
         const passwordValue = passwordInput.value.trim()
 
-        if(passwordValue.lenght < 6){
-            //TODO. mostrar error 
-            return false
+        if(passwordValue.length < 6){
+            showError(passwordError,'Instresa una constraseña de almenos 6 catacteres');
+            return false;
         }
 
         return true
@@ -68,12 +85,12 @@ document.addEventListener('DOMContentLoaded',function(){
         const passwordValue = passwordInput.value.trim();
         const confirmPasswordValue = confirmPasswordInput.value.trim();
 
-        if(passwordValue = passwordInput){
+        if(passwordValue != confirmPasswordValue){
             showError(confirmPasswordError, 'Las constraseñas no coinciden')
             return false;
         }
 
-        return true;
+        return true
     }
 
     function showError(errorElement, message){
@@ -85,6 +102,20 @@ document.addEventListener('DOMContentLoaded',function(){
     function clearError(errorElement,){
         errorElement.innerHTML = '';
         errorElement.style.display = 'none';
+    }
+
+    function saverToLocalStorage(){
+        const emailValue = email.value.trim();
+        localStorage.setItem('email',emailValue)
+        const body = bodyBouilderJSON()
+        console.log(body)
+    }
+
+    function bodyBouilderJSON(){
+        return{
+            "email": email.value,
+            "password":passwordInput.value
+        }
     }
 
 
